@@ -218,7 +218,7 @@ struct PracticePage: View {
                                 }
                             )
                             .frame(maxWidth: .infinity)
-                            .padding(.top, 40)
+                            .padding(.top, 120)
                             .transition(.move(edge: .top).combined(with: .opacity))
                             
                             Spacer()

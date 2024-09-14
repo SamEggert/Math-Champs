@@ -43,6 +43,5 @@ struct TimerSummaryBanner: View {
         .padding()
         .background(Color(hex: "242329"))
         .cornerRadius(15)
-        .shadow(radius: 10)
     }
 }
