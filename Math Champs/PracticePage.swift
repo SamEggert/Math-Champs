@@ -12,6 +12,14 @@ struct PracticePage: View {
     @State private var isCorrect: Bool? = nil
     @State private var showingColorFeedback = false
     @State private var colorFeedbackDuration: Double = 0.25
+    @State private var showTimer = false
+    @State private var isTimerActive = false
+    @State private var displayedTime: Double = 120
+    @State private var timerDuration: Int = 120
+    @State private var remainingTime: Int = 120
+    @State private var timer: Timer?
+    @State private var problemsSolvedDuringTimer = 0
+
 
     var body: some View {
         GeometryReader { geometry in
@@ -22,10 +30,14 @@ struct PracticePage: View {
                     // Progress Bar and Navigation Buttons
                     VStack(spacing: 0) {
                         // Progress Bar
-                        ProgressBar(progress: progressToNextLevel)
+                        ProgressBar(
+                            progress: isTimerActive ? (displayedTime / Double(timerDuration)) : progressToNextLevel,
+                            color: isTimerActive ? .green : .white
+                        )
                             .frame(height: 8)
                             .padding(.horizontal)
                             .padding(.bottom, 10)
+                            .animation(.linear(duration: 0.1), value: displayedTime) // Animate only the bar
                         
                         // Navigation and Level
                         HStack {
@@ -35,9 +47,17 @@ struct PracticePage: View {
                                     .font(.system(size: 20))
                             }
                             Spacer()
-                            Text("Level \(currentLevel)")
-                                .foregroundColor(.white)
-                                .font(.system(size: 18, weight: .bold))
+                            
+                            if isTimerActive {
+                                Text("\(problemsSolvedDuringTimer) | \(timeString(from: remainingTime))")
+                                    .foregroundColor(.white)
+                                    .font(.system(size: 18, weight: .bold))
+                            } else {
+                                Text("Level \(currentLevel)")
+                                    .foregroundColor(.white)
+                                    .font(.system(size: 18, weight: .bold))
+                            }
+                            
                             Spacer()
                             Button(action: { withAnimation { self.selectedTab = 2 } }) {
                                 Image(systemName: "chart.bar")
@@ -49,6 +69,7 @@ struct PracticePage: View {
                         .padding(.top, 10)
                     }
                     .modifier(BelowNotchViewModifier())
+                    .animation(.linear(duration: 0.1), value: displayedTime)
                     
                     Spacer()
                     
@@ -79,9 +100,47 @@ struct PracticePage: View {
                     }
                     .foregroundColor(showingColorFeedback ? colorForAnswer() : .white)
                     .frame(width: min(geometry.size.width * 0.8, 300))
+                    .padding(.top, 20)
+                    
                     
                     Spacer()
                 
+                    // Small row with timer button
+                    HStack {
+                        Button(action: {
+                            // Action for problem counter (to be implemented)
+                        }) {
+                            Image(systemName: "123.rectangle")
+                                .foregroundColor(.white.opacity(0.6))
+                                .font(.system(size: 20))
+                        }
+                        Spacer()
+                        Button(action: {
+                            if isTimerActive {
+                                // Stop the timer
+                                isTimerActive = false
+                                remainingTime = timerDuration
+                                displayedTime = Double(timerDuration)
+                                // Cancel the timer
+                                timer?.invalidate()
+                                timer = nil
+                            } else {
+                                // Start the timer
+                                isTimerActive = true
+                                remainingTime = timerDuration // Reset to full duration
+                                displayedTime = Double(timerDuration)
+                                startTimer()
+                            }
+                        }) {
+                            Image(systemName: isTimerActive ? "timer.circle.fill" : "timer")
+                                .foregroundColor(.white.opacity(0.6))
+                                .font(.system(size: 20))
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 5)
+  
+                    
                     // Number pad
                     VStack(spacing: 4) {
                         ForEach(1...3, id: \.self) { row in
@@ -240,13 +299,16 @@ struct PracticePage: View {
             }
             
             isCorrect = (answer == correctAnswer)
-            gameState.totalProblems += 1
-            if isCorrect == true {
-                gameState.correctAnswers += 1
-                notificationFeedback(.success)
-            } else {
-                notificationFeedback(.error)
-            }
+                    gameState.totalProblems += 1
+                    if isCorrect == true {
+                        gameState.correctAnswers += 1
+                        if isTimerActive {
+                            problemsSolvedDuringTimer += 1
+                        }
+                        notificationFeedback(.success)
+                    } else {
+                        notificationFeedback(.error)
+                    }
             
             showColorFeedback()
         }
@@ -303,6 +365,35 @@ struct PracticePage: View {
         }
         return level
     }
+    
+    func timeString(from seconds: Int) -> String {
+        let minutes = seconds / 60
+        let remainingSeconds = seconds % 60
+        return String(format: "%d:%02d", minutes, remainingSeconds)
+    }
+    
+    func startTimer() {
+        timer?.invalidate() // Invalidate any existing timer
+        displayedTime = Double(timerDuration)
+        remainingTime = timerDuration
+        problemsSolvedDuringTimer = 0 // Reset the counter
+        
+        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+            if self.remainingTime > 0 {
+                self.displayedTime -= 0.1
+                self.remainingTime = Int(self.displayedTime)
+            } else {
+                self.timer?.invalidate()
+                self.timer = nil
+                self.isTimerActive = false
+                self.remainingTime = self.timerDuration
+                self.displayedTime = Double(self.timerDuration)
+                // Show summary or handle timer completion
+                print("Time's up! Problems solved: \(self.problemsSolvedDuringTimer)")
+                self.problemsSolvedDuringTimer = 0 // Reset the counter
+            }
+        }
+    }
 }
 
 struct BelowNotchViewModifier: ViewModifier {
@@ -326,6 +417,7 @@ struct BelowNotchViewModifier: ViewModifier {
 
 struct ProgressBar: View {
     var progress: Double
+    var color: Color
     
     var body: some View {
         GeometryReader { geometry in
@@ -335,7 +427,7 @@ struct ProgressBar: View {
                     .foregroundColor(Color.gray.opacity(0.3))
                 RoundedRectangle(cornerRadius: 4)
                     .frame(width: max(0, CGFloat(progress) * geometry.size.width), height: 8)
-                    .foregroundColor(.white)
+                    .foregroundColor(color)
             }
         }
     }
