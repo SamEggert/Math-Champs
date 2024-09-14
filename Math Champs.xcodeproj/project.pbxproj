@@ -22,6 +22,7 @@
 		0405186C2C92065500414BDA /* PracticePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040518692C92065400414BDA /* PracticePage.swift */; };
 		0405186D2C92065500414BDA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0405186A2C92065500414BDA /* SettingsView.swift */; };
 		0405186E2C92065500414BDA /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0405186B2C92065500414BDA /* StatsView.swift */; };
+		04F8180E2C961BFE00B8085E /* TimerSummaryBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F8180D2C961BFE00B8085E /* TimerSummaryBanner.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +61,7 @@
 		040518692C92065400414BDA /* PracticePage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PracticePage.swift; sourceTree = "<group>"; };
 		0405186A2C92065500414BDA /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		0405186B2C92065500414BDA /* StatsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
+		04F8180D2C961BFE00B8085E /* TimerSummaryBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerSummaryBanner.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,6 +118,7 @@
 				040518642C9205DE00414BDA /* AppDelegate.swift */,
 				040518582C8F42A400414BDA /* GameState.swift */,
 				040518692C92065400414BDA /* PracticePage.swift */,
+				04F8180D2C961BFE00B8085E /* TimerSummaryBanner.swift */,
 				0405186A2C92065500414BDA /* SettingsView.swift */,
 				0405186B2C92065500414BDA /* StatsView.swift */,
 				040518672C92061C00414BDA /* AnimatedButton.swift */,
@@ -290,6 +293,7 @@
 				0405186E2C92065500414BDA /* StatsView.swift in Sources */,
 				0405186C2C92065500414BDA /* PracticePage.swift in Sources */,
 				040518682C92061C00414BDA /* AnimatedButton.swift in Sources */,
+				04F8180E2C961BFE00B8085E /* TimerSummaryBanner.swift in Sources */,
 				040518292C8F420000414BDA /* Math_ChampsApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

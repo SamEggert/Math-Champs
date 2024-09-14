@@ -11,33 +11,36 @@ struct PracticePage: View {
     @State private var userAnswer = ""
     @State private var isCorrect: Bool? = nil
     @State private var showingColorFeedback = false
+    @State private var showingIncorrectFeedback = false
     @State private var colorFeedbackDuration: Double = 0.25
     @State private var showTimer = false
     @State private var isTimerActive = false
-    @State private var displayedTime: Double = 120
-    @State private var timerDuration: Int = 120
-    @State private var remainingTime: Int = 120
+    @State private var displayedTime: Double = 0
+    @State private var remainingTime: Int = 0
     @State private var timer: Timer?
     @State private var problemsSolvedDuringTimer = 0
-
+    @State private var showSummaryBanner = false
+    @State private var isSummaryExpanded = false
+    @State private var currentProblem: Problem? = nil
 
     var body: some View {
         GeometryReader { geometry in
             ZStack {
                 Color(hex: "242329").edgesIgnoringSafeArea(.all)
-               
+                
                 VStack(spacing: 0) {
                     // Progress Bar and Navigation Buttons
                     VStack(spacing: 0) {
                         // Progress Bar
                         ProgressBar(
-                            progress: isTimerActive ? (displayedTime / Double(timerDuration)) : progressToNextLevel,
+                            progress: isTimerActive ? (displayedTime / Double(settingsManager.timerDuration)) : progressToNextLevel,
                             color: isTimerActive ? .green : .white
                         )
-                            .frame(height: 8)
-                            .padding(.horizontal)
-                            .padding(.bottom, 10)
-                            .animation(.linear(duration: 0.1), value: displayedTime) // Animate only the bar
+                        .frame(height: 8)
+                        .padding(.horizontal)
+                        .padding(.bottom, 10)
+                        .animation(.linear(duration: 0.1), value: displayedTime) // Animate only the bar
+                                                
                         
                         // Navigation and Level
                         HStack {
@@ -75,12 +78,12 @@ struct PracticePage: View {
                     
                     // Problem display
                     VStack(alignment: .trailing, spacing: 10) {
-                        Text("\(firstNumber)")
+                        Text("\(currentProblem?.firstNumber ?? 0)")
                             .font(.system(size: 60, weight: .bold))
                         HStack(spacing: 20) {
-                            Text(operationSymbol)
+                            Text(currentProblem?.operation ?? "+")
                                 .font(.system(size: 60, weight: .bold))
-                            Text("\(secondNumber)")
+                            Text("\(currentProblem?.secondNumber ?? 0)")
                                 .font(.system(size: 60, weight: .bold))
                         }
                         ZStack(alignment: .trailing) {
@@ -94,7 +97,7 @@ struct PracticePage: View {
                                     .frame(height: 4)
                             }
                         }
-                        Text(userAnswer.isEmpty ? "?" : userAnswer)
+                        Text(showingIncorrectFeedback ? userAnswer : (userAnswer.isEmpty ? "?" : userAnswer))
                             .font(.system(size: 60, weight: .bold))
                             .frame(height: 70)
                     }
@@ -102,33 +105,35 @@ struct PracticePage: View {
                     .frame(width: min(geometry.size.width * 0.8, 300))
                     .padding(.top, 20)
                     
-                    
                     Spacer()
-                
-                    // Small row with timer button
+                    
+                    // Small row with timer button and new problem button
                     HStack {
                         Button(action: {
-                            // Action for problem counter (to be implemented)
+                            generateNewProblem()
                         }) {
-                            Image(systemName: "123.rectangle")
+                            Image(systemName: "arrow.clockwise")
                                 .foregroundColor(.white.opacity(0.6))
                                 .font(.system(size: 20))
                         }
+                        
                         Spacer()
+                        
                         Button(action: {
                             if isTimerActive {
                                 // Stop the timer
                                 isTimerActive = false
-                                remainingTime = timerDuration
-                                displayedTime = Double(timerDuration)
+                                remainingTime = settingsManager.timerDuration
+                                displayedTime = Double(settingsManager.timerDuration)
                                 // Cancel the timer
                                 timer?.invalidate()
                                 timer = nil
                             } else {
                                 // Start the timer
                                 isTimerActive = true
-                                remainingTime = timerDuration // Reset to full duration
-                                displayedTime = Double(timerDuration)
+                                remainingTime = settingsManager.timerDuration // Reset to full duration
+                                generateNewProblem()
+                                displayedTime = Double(settingsManager.timerDuration)
                                 startTimer()
                             }
                         }) {
@@ -139,7 +144,7 @@ struct PracticePage: View {
                     }
                     .padding(.horizontal)
                     .padding(.bottom, 5)
-  
+                    
                     
                     // Number pad
                     VStack(spacing: 4) {
@@ -196,10 +201,45 @@ struct PracticePage: View {
                     .padding(.horizontal, 8)
                 }
                 .padding(.bottom, optimizedBottomPadding(for: geometry))
+                
+                // Overlay the TimerSummaryBanner
+                if showSummaryBanner {
+                    GeometryReader { geo in
+                        VStack {
+                            TimerSummaryBanner(
+                                problemsSolved: problemsSolvedDuringTimer,
+                                totalTime: settingsManager.timerDuration,  // Use the setting here
+                                isExpanded: $isSummaryExpanded,
+                                onDismiss: {
+                                    withAnimation {
+                                        self.showSummaryBanner = false
+                                        self.isSummaryExpanded = false
+                                    }
+                                }
+                            )
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, 40)
+                            .transition(.move(edge: .top).combined(with: .opacity))
+                            
+                            Spacer()
+                        }
+                    }
+                    .zIndex(1) // Ensure it's above other content
+                }
             }
         }
         .edgesIgnoringSafeArea(.all)
-        .onAppear(perform: generateNewProblem)
+        .onAppear {
+            displayedTime = Double(settingsManager.timerDuration)
+            remainingTime = settingsManager.timerDuration
+            if settingsManager.preserveProblems,
+               let decodedProblem = settingsManager.getLastProblem() {
+                currentProblem = decodedProblem
+            } else {
+                generateNewProblem()
+            }
+        }
+        
         .onChange(of: settingsManager.operationTypes) { _, _ in generateNewProblem() }
         .onChange(of: settingsManager.additionMinNumber1) { _, _ in generateNewProblem() }
         .onChange(of: settingsManager.additionMaxNumber1) { _, _ in generateNewProblem() }
@@ -271,6 +311,12 @@ struct PracticePage: View {
             secondNumber = Int.random(in: additionMin2...additionMax2)
         }
         
+        currentProblem = Problem(firstNumber: firstNumber, secondNumber: secondNumber, operation: operationSymbol)
+        
+        if settingsManager.preserveProblems {
+            settingsManager.saveLastProblem(currentProblem)
+        }
+        
         userAnswer = ""
         isCorrect = nil
     }
@@ -283,42 +329,42 @@ struct PracticePage: View {
     }
     
     func checkAnswer() {
+        guard let problem = currentProblem else { return }
+        
         if let answer = Int(userAnswer) {
-            let correctAnswer: Int
-            switch operationSymbol {
-            case "+":
-                correctAnswer = firstNumber + secondNumber
-            case "-":
-                correctAnswer = firstNumber - secondNumber
-            case "×":
-                correctAnswer = firstNumber * secondNumber
-            case "÷":
-                correctAnswer = firstNumber / secondNumber
-            default:
-                correctAnswer = 0
-            }
+            let correctAnswer = problem.correctAnswer
             
             isCorrect = (answer == correctAnswer)
-                    gameState.totalProblems += 1
-                    if isCorrect == true {
-                        gameState.correctAnswers += 1
-                        if isTimerActive {
-                            problemsSolvedDuringTimer += 1
-                        }
-                        notificationFeedback(.success)
-                    } else {
-                        notificationFeedback(.error)
-                    }
-            
-            showColorFeedback()
+            gameState.totalProblems += 1
+            if isCorrect == true {
+                gameState.correctAnswers += 1
+                if isTimerActive {
+                    problemsSolvedDuringTimer += 1
+                }
+                notificationFeedback(.success)
+                
+                // Always generate a new problem on correct answer
+                showColorFeedback(generateNewProblem: true)
+            } else {
+                notificationFeedback(.error)
+                
+                if settingsManager.generateNewOnIncorrect {
+                    showingIncorrectFeedback = true
+                    showColorFeedback(generateNewProblem: true)
+                } else {
+                    // Clear the input but keep the same problem
+                    showColorFeedback(generateNewProblem: false)
+                }
+            }
         }
     }
-        
-    func showColorFeedback() {
+    
+    func showColorFeedback(generateNewProblem: Bool) {
         showingColorFeedback = true
         DispatchQueue.main.asyncAfter(deadline: .now() + colorFeedbackDuration) {
             self.showingColorFeedback = false
-            if self.isCorrect == true {
+            self.showingIncorrectFeedback = false
+            if generateNewProblem {
                 self.generateNewProblem()
             } else {
                 self.userAnswer = "" // Clear the input if the answer was incorrect
@@ -374,8 +420,8 @@ struct PracticePage: View {
     
     func startTimer() {
         timer?.invalidate() // Invalidate any existing timer
-        displayedTime = Double(timerDuration)
-        remainingTime = timerDuration
+        displayedTime = Double(settingsManager.timerDuration)
+        remainingTime = settingsManager.timerDuration
         problemsSolvedDuringTimer = 0 // Reset the counter
         
         timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
@@ -386,11 +432,22 @@ struct PracticePage: View {
                 self.timer?.invalidate()
                 self.timer = nil
                 self.isTimerActive = false
-                self.remainingTime = self.timerDuration
-                self.displayedTime = Double(self.timerDuration)
-                // Show summary or handle timer completion
-                print("Time's up! Problems solved: \(self.problemsSolvedDuringTimer)")
-                self.problemsSolvedDuringTimer = 0 // Reset the counter
+                self.remainingTime = self.settingsManager.timerDuration
+                self.displayedTime = Double(self.settingsManager.timerDuration)
+                
+                // Show the summary banner
+                withAnimation {
+                    self.showSummaryBanner = true
+                }
+                
+                // Hide the banner after 5 seconds if it's not expanded
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                    if !self.isSummaryExpanded {
+                        withAnimation {
+                            self.showSummaryBanner = false
+                        }
+                    }
+                }
             }
         }
     }
@@ -429,6 +486,27 @@ struct ProgressBar: View {
                     .frame(width: max(0, CGFloat(progress) * geometry.size.width), height: 8)
                     .foregroundColor(color)
             }
+        }
+    }
+}
+
+struct Problem: Codable {
+    let firstNumber: Int
+    let secondNumber: Int
+    let operation: String
+    
+    var correctAnswer: Int {
+        switch operation {
+        case "+":
+            return firstNumber + secondNumber
+        case "-":
+            return firstNumber - secondNumber
+        case "×":
+            return firstNumber * secondNumber
+        case "÷":
+            return firstNumber / secondNumber
+        default:
+            return 0
         }
     }
 }
