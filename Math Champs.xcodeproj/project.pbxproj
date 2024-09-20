@@ -22,7 +22,6 @@
 		0405186C2C92065500414BDA /* PracticePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040518692C92065400414BDA /* PracticePage.swift */; };
 		0405186D2C92065500414BDA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0405186A2C92065500414BDA /* SettingsView.swift */; };
 		0405186E2C92065500414BDA /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0405186B2C92065500414BDA /* StatsView.swift */; };
-		041861812C9D287200CA0AFF /* CustomTicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041861802C9D286900CA0AFF /* CustomTicker.swift */; };
 		04F8180E2C961BFE00B8085E /* TimerSummaryBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F8180D2C961BFE00B8085E /* TimerSummaryBanner.swift */; };
 /* End PBXBuildFile section */
 
@@ -62,7 +61,6 @@
 		040518692C92065400414BDA /* PracticePage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PracticePage.swift; sourceTree = "<group>"; };
 		0405186A2C92065500414BDA /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		0405186B2C92065500414BDA /* StatsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
-		041861802C9D286900CA0AFF /* CustomTicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTicker.swift; sourceTree = "<group>"; };
 		04F8180D2C961BFE00B8085E /* TimerSummaryBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerSummaryBanner.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -124,7 +122,6 @@
 				0405186A2C92065500414BDA /* SettingsView.swift */,
 				0405186B2C92065500414BDA /* StatsView.swift */,
 				040518672C92061C00414BDA /* AnimatedButton.swift */,
-				041861802C9D286900CA0AFF /* CustomTicker.swift */,
 				040518522C8F425000414BDA /* AppSettingsManager.swift */,
 				0405182C2C8F420100414BDA /* Assets.xcassets */,
 				0405182E2C8F420100414BDA /* Preview Content */,
@@ -221,7 +218,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1540;
-				LastUpgradeCheck = 1540;
+				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					040518242C8F420000414BDA = {
 						CreatedOnToolsVersion = 15.4;
@@ -289,7 +286,6 @@
 			files = (
 				0405182B2C8F420000414BDA /* ContentView.swift in Sources */,
 				040518632C8F42A500414BDA /* ArrayAppStorage.swift in Sources */,
-				041861812C9D287200CA0AFF /* CustomTicker.swift in Sources */,
 				040518532C8F425000414BDA /* AppSettingsManager.swift in Sources */,
 				0405186D2C92065500414BDA /* SettingsView.swift in Sources */,
 				040518602C8F42A500414BDA /* GameState.swift in Sources */,
@@ -519,7 +515,6 @@
 		0405184D2C8F420100414BDA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -539,7 +534,6 @@
 		0405184E2C8F420100414BDA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -559,7 +553,6 @@
 		040518502C8F420100414BDA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = UZ5K27K6AB;
@@ -577,7 +570,6 @@
 		040518512C8F420100414BDA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = UZ5K27K6AB;

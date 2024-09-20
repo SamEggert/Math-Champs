@@ -2,6 +2,8 @@ import SwiftUI
 
 struct SettingsView: View {
     @ObservedObject var settingsManager: AppSettingsManager
+    @State private var isDifficultiesExpanded = false
+    @State private var isExtrasExpanded = false
     
     let presetDurations = [15, 30, 60, 120, 300] // in seconds
 
@@ -38,6 +40,51 @@ struct SettingsView: View {
                 .pickerStyle(MenuPickerStyle())
             }
             
+            Section(header: Text("Presets").foregroundColor(.white)) {
+                DisclosureGroup(
+                    isExpanded: $isDifficultiesExpanded,
+                    content: {
+                        Button("Easy") {
+                            applyEasyPreset()
+                        }
+                        .padding(.vertical, 5)
+                        
+                        Button("Medium") {
+                            applyMediumPreset()
+                        }
+                        .padding(.vertical, 5)
+                        
+                        Button("Hard") {
+                            applyHardPreset()
+                        }
+                        .padding(.vertical, 5)
+                    },
+                    label: {
+                        Text("Difficulties")
+                            .foregroundColor(.white)
+                    }
+                )
+                
+                DisclosureGroup(
+                    isExpanded: $isExtrasExpanded,
+                    content: {
+                        Button("Zetamac") {
+                            applyZetamacPreset()
+                        }
+                        .padding(.vertical, 5)
+                        
+                        Button("2 Digit Multiplication") {
+                            applyTwoDigitMultiplicationPreset()
+                        }
+                        .padding(.vertical, 5)
+                    },
+                    label: {
+                        Text("Extras")
+                            .foregroundColor(.white)
+                    }
+                )
+            }
+            
             Section(header: Text("Problem Behavior").foregroundColor(.white)) {
                 Toggle("Generate new problems on incorrect answers", isOn: $settingsManager.generateNewOnIncorrect)
                 Toggle("Preserve problems between sessions", isOn: $settingsManager.preserveProblems)
@@ -71,6 +118,66 @@ struct SettingsView: View {
             let minutes = seconds / 60
             return "\(minutes) minute\(minutes > 1 ? "s" : "")"
         }
+    }
+    
+    private func applyEasyPreset() {
+        settingsManager.timerDuration = 120 // 2 minutes
+        settingsManager.additionMinNumber1 = 1
+        settingsManager.additionMaxNumber1 = 10
+        settingsManager.additionMinNumber2 = 1
+        settingsManager.additionMaxNumber2 = 10
+        settingsManager.multiplicationMinNumber1 = 1
+        settingsManager.multiplicationMaxNumber1 = 5
+        settingsManager.multiplicationMinNumber2 = 1
+        settingsManager.multiplicationMaxNumber2 = 5
+        settingsManager.operationTypes = ["addition", "subtraction"] // Only addition and subtraction for easy
+    }
+
+    private func applyMediumPreset() {
+        settingsManager.timerDuration = 180 // 3 minutes
+        settingsManager.additionMinNumber1 = 1
+        settingsManager.additionMaxNumber1 = 50
+        settingsManager.additionMinNumber2 = 1
+        settingsManager.additionMaxNumber2 = 50
+        settingsManager.multiplicationMinNumber1 = 2
+        settingsManager.multiplicationMaxNumber1 = 12
+        settingsManager.multiplicationMinNumber2 = 2
+        settingsManager.multiplicationMaxNumber2 = 12
+        settingsManager.operationTypes = ["addition", "subtraction", "multiplication"] // Add multiplication for medium
+    }
+
+    private func applyHardPreset() {
+        settingsManager.timerDuration = 240 // 4 minutes
+        settingsManager.additionMinNumber1 = 10
+        settingsManager.additionMaxNumber1 = 99
+        settingsManager.additionMinNumber2 = 10
+        settingsManager.additionMaxNumber2 = 99
+        settingsManager.multiplicationMinNumber1 = 5
+        settingsManager.multiplicationMaxNumber1 = 20
+        settingsManager.multiplicationMinNumber2 = 5
+        settingsManager.multiplicationMaxNumber2 = 20
+        settingsManager.operationTypes = ["addition", "subtraction", "multiplication", "division"] // Add division for hard
+    }
+    
+    private func applyZetamacPreset() {
+        settingsManager.timerDuration = 120
+        settingsManager.additionMinNumber1 = 1
+        settingsManager.additionMaxNumber1 = 99
+        settingsManager.additionMinNumber2 = 1
+        settingsManager.additionMaxNumber2 = 99
+        settingsManager.multiplicationMinNumber1 = 2
+        settingsManager.multiplicationMaxNumber1 = 12
+        settingsManager.multiplicationMinNumber2 = 2
+        settingsManager.multiplicationMaxNumber2 = 12
+        settingsManager.operationTypes = ["addition", "subtraction", "multiplication", "division"]
+    }
+    
+    private func applyTwoDigitMultiplicationPreset() {
+        settingsManager.multiplicationMinNumber1 = 11
+        settingsManager.multiplicationMaxNumber1 = 99
+        settingsManager.multiplicationMinNumber2 = 11
+        settingsManager.multiplicationMaxNumber2 = 99
+        settingsManager.operationTypes = ["multiplication"]
     }
 }
 
