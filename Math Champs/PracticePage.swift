@@ -22,6 +22,10 @@ struct PracticePage: View {
     @State private var showSummaryBanner = false
     @State private var isSummaryExpanded = false
     @State private var currentProblem: Problem? = nil
+    @State private var isPerfectAnswer: Bool = false
+    @State private var isFirstAttempt: Bool = true
+    @State private var hasCleared: Bool = false
+    @State private var hasSubmittedIncorrectly: Bool = false
 
     var body: some View {
         GeometryReader { geometry in
@@ -172,9 +176,10 @@ struct PracticePage: View {
                                 action: {
                                     self.userAnswer = ""
                                     self.isCorrect = nil
+                                    self.hasCleared = true
                                     self.impactFeedback(.medium)
                                 },
-                                width: (geometry.size.width - 32) / 3,
+                                width: (UIScreen.main.bounds.width - 32) / 3,
                                 height: 55,
                                 topColor: Color(hex: "686060"),
                                 bottomColor: Color(hex: "484040"),
@@ -248,6 +253,7 @@ struct PracticePage: View {
             } else {
                 generateNewProblem()
             }
+            resetProblemState()
         }
         
         .onChange(of: settingsManager.operationTypes) { _, _ in generateNewProblem() }
@@ -327,49 +333,73 @@ struct PracticePage: View {
             settingsManager.saveLastProblem(currentProblem)
         }
         
+        resetProblemState()
+    }
+    
+    func resetProblemState() {
         userAnswer = ""
         isCorrect = nil
+        isPerfectAnswer = false
+        isFirstAttempt = true
+        showingColorFeedback = false
+        showingIncorrectFeedback = false
+        hasCleared = false
+        hasSubmittedIncorrectly = false
     }
+
     
     private func colorForAnswer() -> Color {
         guard let isCorrect = isCorrect else {
             return .white  // Default color when isCorrect is nil
         }
+        if isCorrect && isPerfectAnswer {
+            return .yellow  // Gold color for perfect answers
+        }
         return isCorrect ? .green : .red
     }
     
+    
     func checkAnswer(autoSubmit: Bool) {
-        guard let problem = currentProblem else { return }
-        
-        if let answer = Int(userAnswer) {
-            let correctAnswer = problem.correctAnswer
-            
-            isCorrect = (answer == correctAnswer)
-            
-            if isCorrect == true {
-                gameState.totalProblems += 1
-                gameState.correctAnswers += 1
-                if isTimerActive {
-                    problemsSolvedDuringTimer += 1
-                }
-                notificationFeedback(.success)
-                
-                // Always generate a new problem on correct answer
-                showColorFeedback(generateNewProblem: true)
-            } else if !autoSubmit {
-                gameState.totalProblems += 1
-                notificationFeedback(.error)
-                
-                if settingsManager.generateNewOnIncorrect {
-                    showingIncorrectFeedback = true
-                    showColorFeedback(generateNewProblem: true)
-                } else {
-                    // Clear the input but keep the same problem
-                    showColorFeedback(generateNewProblem: false)
-                }
-            }
-        }
-    }
+       guard let problem = currentProblem else { return }
+       
+       if let answer = Int(userAnswer) {
+           let correctAnswer = problem.correctAnswer
+           
+           isCorrect = (answer == correctAnswer)
+           
+           if isCorrect == true {
+               gameState.totalProblems += 1
+               gameState.correctAnswers += 1
+               if isTimerActive {
+                   problemsSolvedDuringTimer += 1
+               }
+               
+               // Check if it's a perfect answer
+               if settingsManager.automaticCorrect {
+                   isPerfectAnswer = !hasCleared
+               } else {
+                   isPerfectAnswer = !hasCleared && !hasSubmittedIncorrectly
+               }
+               
+               notificationFeedback(isPerfectAnswer ? .success : .warning)
+               
+               // Always generate a new problem on correct answer
+               showColorFeedback(generateNewProblem: true)
+           } else if !autoSubmit {
+               gameState.totalProblems += 1
+               notificationFeedback(.error)
+               hasSubmittedIncorrectly = true
+               
+               if settingsManager.generateNewOnIncorrect {
+                   showingIncorrectFeedback = true
+                   showColorFeedback(generateNewProblem: true)
+               } else {
+                   // Clear the input but keep the same problem
+                   showColorFeedback(generateNewProblem: false)
+               }
+           }
+       }
+   }
     
     func showColorFeedback(generateNewProblem: Bool) {
         showingColorFeedback = true
@@ -384,8 +414,12 @@ struct PracticePage: View {
         }
     }
     
+    
     func appendNumber(_ number: Int) {
         userAnswer += "\(number)"
+        if settingsManager.automaticCorrect {
+            self.checkAnswer(autoSubmit: true)
+        }
     }
     
     func impactFeedback(_ style: UIImpactFeedbackGenerator.FeedbackStyle) {
