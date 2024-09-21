@@ -26,6 +26,8 @@ struct PracticePage: View {
     @State private var isFirstAttempt: Bool = true
     @State private var hasCleared: Bool = false
     @State private var hasSubmittedIncorrectly: Bool = false
+    @State private var isAnswerChecked = false
+    @State private var lastCheckedAnswer = ""
 
     var body: some View {
         GeometryReader { geometry in
@@ -159,9 +161,6 @@ struct PracticePage: View {
                                         title: "\((row - 1) * 3 + column)",
                                         action: {
                                             self.appendNumber((row - 1) * 3 + column)
-                                            if settingsManager.automaticCorrect {
-                                                self.checkAnswer(autoSubmit: true)
-                                            }
                                         },
                                         width: (geometry.size.width - 32) / 3,
                                         height: 55,
@@ -177,6 +176,8 @@ struct PracticePage: View {
                                     self.userAnswer = ""
                                     self.isCorrect = nil
                                     self.hasCleared = true
+                                    self.isAnswerChecked = false
+                                    self.lastCheckedAnswer = ""
                                     self.impactFeedback(.medium)
                                 },
                                 width: (UIScreen.main.bounds.width - 32) / 3,
@@ -190,9 +191,6 @@ struct PracticePage: View {
                                 title: "0",
                                 action: {
                                     self.appendNumber(0)
-                                    if settingsManager.automaticCorrect {
-                                        self.checkAnswer(autoSubmit: true)
-                                    }
                                 },
                                 width: (geometry.size.width - 32) / 3,
                                 height: 55,
@@ -291,43 +289,41 @@ struct PracticePage: View {
         
         let operation = settingsManager.operationTypes.randomElement()!
         
-        // Ensure min values are always less than or equal to max values
-        let additionMin1 = min(settingsManager.additionMinNumber1, settingsManager.additionMaxNumber1)
-        let additionMax1 = max(settingsManager.additionMinNumber1, settingsManager.additionMaxNumber1)
-        let additionMin2 = min(settingsManager.additionMinNumber2, settingsManager.additionMaxNumber2)
-        let additionMax2 = max(settingsManager.additionMinNumber2, settingsManager.additionMaxNumber2)
-        let multiplicationMin1 = min(settingsManager.multiplicationMinNumber1, settingsManager.multiplicationMaxNumber1)
-        let multiplicationMax1 = max(settingsManager.multiplicationMinNumber1, settingsManager.multiplicationMaxNumber1)
-        let multiplicationMin2 = min(settingsManager.multiplicationMinNumber2, settingsManager.multiplicationMaxNumber2)
-        let multiplicationMax2 = max(settingsManager.multiplicationMinNumber2, settingsManager.multiplicationMaxNumber2)
-        
         switch operation {
         case "addition":
             operationSymbol = "+"
-            firstNumber = Int.random(in: additionMin1...additionMax1)
-            secondNumber = Int.random(in: additionMin2...additionMax2)
+            firstNumber = Int.random(in: settingsManager.additionMinNumber1...settingsManager.additionMaxNumber1)
+            secondNumber = Int.random(in: settingsManager.additionMinNumber2...settingsManager.additionMaxNumber2)
+            currentProblem = Problem(firstNumber: firstNumber, secondNumber: secondNumber, operation: operationSymbol)
+
         case "subtraction":
             operationSymbol = "-"
-            secondNumber = Int.random(in: additionMin1...additionMax1)
-            let answer = Int.random(in: additionMin2...additionMax2)
-            firstNumber = secondNumber + answer
-            
+            let n1 = Int.random(in: settingsManager.additionMinNumber1...settingsManager.additionMaxNumber1)
+            let n2 = Int.random(in: settingsManager.additionMinNumber2...settingsManager.additionMaxNumber2)
+            firstNumber = n1 + n2
+            secondNumber = n1
+            currentProblem = Problem(firstNumber: firstNumber, secondNumber: secondNumber, operation: operationSymbol)
+
         case "multiplication":
             operationSymbol = "×"
-            firstNumber = Int.random(in: multiplicationMin1...multiplicationMax1)
-            secondNumber = Int.random(in: multiplicationMin2...multiplicationMax2)
+            firstNumber = Int.random(in: settingsManager.multiplicationMinNumber1...settingsManager.multiplicationMaxNumber1)
+            secondNumber = Int.random(in: settingsManager.multiplicationMinNumber2...settingsManager.multiplicationMaxNumber2)
+            currentProblem = Problem(firstNumber: firstNumber, secondNumber: secondNumber, operation: operationSymbol)
+
         case "division":
             operationSymbol = "÷"
-            secondNumber = Int.random(in: max(1, multiplicationMin1)...multiplicationMax1)
-            let answer = Int.random(in: max(1, multiplicationMin2)...multiplicationMax2)
-            firstNumber = secondNumber * answer
+            let n1 = Int.random(in: settingsManager.multiplicationMinNumber1...settingsManager.multiplicationMaxNumber1)
+            let n2 = Int.random(in: settingsManager.multiplicationMinNumber2...settingsManager.multiplicationMaxNumber2)
+            firstNumber = n1 * n2
+            secondNumber = n1
+            currentProblem = Problem(firstNumber: firstNumber, secondNumber: secondNumber, operation: operationSymbol)
+
         default:
             operationSymbol = "+"
-            firstNumber = Int.random(in: additionMin1...additionMax1)
-            secondNumber = Int.random(in: additionMin2...additionMax2)
+            firstNumber = Int.random(in: settingsManager.additionMinNumber1...settingsManager.additionMaxNumber1)
+            secondNumber = Int.random(in: settingsManager.additionMinNumber2...settingsManager.additionMaxNumber2)
+            currentProblem = Problem(firstNumber: firstNumber, secondNumber: secondNumber, operation: operationSymbol)
         }
-        
-        currentProblem = Problem(firstNumber: firstNumber, secondNumber: secondNumber, operation: operationSymbol)
         
         if settingsManager.preserveProblems {
             settingsManager.saveLastProblem(currentProblem)
@@ -345,6 +341,8 @@ struct PracticePage: View {
         showingIncorrectFeedback = false
         hasCleared = false
         hasSubmittedIncorrectly = false
+        isAnswerChecked = false
+        lastCheckedAnswer = ""
     }
 
     
@@ -360,46 +358,46 @@ struct PracticePage: View {
     
     
     func checkAnswer(autoSubmit: Bool) {
-       guard let problem = currentProblem else { return }
-       
-       if let answer = Int(userAnswer) {
-           let correctAnswer = problem.correctAnswer
+        guard let problem = currentProblem else { return }
+        
+        if let answer = Int(userAnswer) {
+            let correctAnswer = problem.correctAnswer
            
-           isCorrect = (answer == correctAnswer)
+            isCorrect = (answer == correctAnswer)
            
-           if isCorrect == true {
-               gameState.totalProblems += 1
-               gameState.correctAnswers += 1
-               if isTimerActive {
-                   problemsSolvedDuringTimer += 1
-               }
+            if isCorrect == true && userAnswer != lastCheckedAnswer {
+                gameState.totalProblems += 1
+                gameState.correctAnswers += 1
+                if isTimerActive {
+                    problemsSolvedDuringTimer += 1
+                }
                
-               // Check if it's a perfect answer
-               if settingsManager.automaticCorrect {
-                   isPerfectAnswer = !hasCleared
-               } else {
-                   isPerfectAnswer = !hasCleared && !hasSubmittedIncorrectly
-               }
+                // Check if it's a perfect answer
+                isPerfectAnswer = !hasCleared && !hasSubmittedIncorrectly
                
-               notificationFeedback(isPerfectAnswer ? .success : .warning)
+                notificationFeedback(isPerfectAnswer ? .success : .warning)
                
-               // Always generate a new problem on correct answer
-               showColorFeedback(generateNewProblem: true)
-           } else if !autoSubmit {
-               gameState.totalProblems += 1
-               notificationFeedback(.error)
-               hasSubmittedIncorrectly = true
+                // Always generate a new problem on correct answer
+                showColorFeedback(generateNewProblem: true)
+                lastCheckedAnswer = userAnswer
+            } else if isCorrect == false && (!settingsManager.automaticCorrect || !autoSubmit) {
+                gameState.totalProblems += 1
+                notificationFeedback(.error)
+                hasSubmittedIncorrectly = true
                
-               if settingsManager.generateNewOnIncorrect {
-                   showingIncorrectFeedback = true
-                   showColorFeedback(generateNewProblem: true)
-               } else {
-                   // Clear the input but keep the same problem
-                   showColorFeedback(generateNewProblem: false)
-               }
-           }
-       }
-   }
+                if settingsManager.generateNewOnIncorrect {
+                    showingIncorrectFeedback = true
+                    showColorFeedback(generateNewProblem: true)
+                } else {
+                    // Clear the input but keep the same problem
+                    showColorFeedback(generateNewProblem: false)
+                }
+                lastCheckedAnswer = userAnswer
+            }
+            
+            isAnswerChecked = isCorrect == true
+        }
+    }
     
     func showColorFeedback(generateNewProblem: Bool) {
         showingColorFeedback = true
@@ -411,6 +409,8 @@ struct PracticePage: View {
             } else {
                 self.userAnswer = "" // Clear the input if the answer was incorrect
             }
+            self.isAnswerChecked = false
+            self.lastCheckedAnswer = ""
         }
     }
     
