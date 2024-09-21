@@ -87,6 +87,7 @@ struct SettingsView: View {
             
             Section(header: Text("Problem Behavior").foregroundColor(.white)) {
                 Toggle("Generate new problems on incorrect answers", isOn: $settingsManager.generateNewOnIncorrect)
+                Toggle("Automatically Detect Correct Answers", isOn: $settingsManager.automaticCorrect)
                 Toggle("Preserve problems between sessions", isOn: $settingsManager.preserveProblems)
             }
             

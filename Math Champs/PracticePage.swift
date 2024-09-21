@@ -153,7 +153,12 @@ struct PracticePage: View {
                                 ForEach(1...3, id: \.self) { column in
                                     AnimatedButton(
                                         title: "\((row - 1) * 3 + column)",
-                                        action: { self.appendNumber((row - 1) * 3 + column) },
+                                        action: {
+                                            self.appendNumber((row - 1) * 3 + column)
+                                            if settingsManager.automaticCorrect {
+                                                self.checkAnswer(autoSubmit: true)
+                                            }
+                                        },
                                         width: (geometry.size.width - 32) / 3,
                                         height: 55,
                                         fontSize: 30
@@ -178,7 +183,12 @@ struct PracticePage: View {
                             )
                             AnimatedButton(
                                 title: "0",
-                                action: { self.appendNumber(0) },
+                                action: {
+                                    self.appendNumber(0)
+                                    if settingsManager.automaticCorrect {
+                                        self.checkAnswer(autoSubmit: true)
+                                    }
+                                },
                                 width: (geometry.size.width - 32) / 3,
                                 height: 55,
                                 fontSize: 30
@@ -186,7 +196,7 @@ struct PracticePage: View {
                             AnimatedButton(
                                 title: "Submit",
                                 action: {
-                                    self.checkAnswer()
+                                    self.checkAnswer(autoSubmit: false)
                                     self.impactFeedback(.medium)
                                 },
                                 width: (geometry.size.width - 32) / 3,
@@ -328,15 +338,16 @@ struct PracticePage: View {
         return isCorrect ? .green : .red
     }
     
-    func checkAnswer() {
+    func checkAnswer(autoSubmit: Bool) {
         guard let problem = currentProblem else { return }
         
         if let answer = Int(userAnswer) {
             let correctAnswer = problem.correctAnswer
             
             isCorrect = (answer == correctAnswer)
-            gameState.totalProblems += 1
+            
             if isCorrect == true {
+                gameState.totalProblems += 1
                 gameState.correctAnswers += 1
                 if isTimerActive {
                     problemsSolvedDuringTimer += 1
@@ -345,7 +356,8 @@ struct PracticePage: View {
                 
                 // Always generate a new problem on correct answer
                 showColorFeedback(generateNewProblem: true)
-            } else {
+            } else if !autoSubmit {
+                gameState.totalProblems += 1
                 notificationFeedback(.error)
                 
                 if settingsManager.generateNewOnIncorrect {

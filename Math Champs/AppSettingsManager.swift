@@ -22,6 +22,7 @@ class AppSettingsManager: ObservableObject {
     @AppStorage("divisionMaxNumber2") var divisionMaxNumber2 = 12
     
     @AppStorage("generateNewOnIncorrect") var generateNewOnIncorrect = false
+    @AppStorage("automaticCorrect") var automaticCorrect = false
     @AppStorage("preserveProblems") var preserveProblems = true
     @AppStorage("lastProblem") private var lastProblemData: Data?
     @Published var operationTypes: Set<String> = ["addition", "subtraction", "multiplication", "division"]
