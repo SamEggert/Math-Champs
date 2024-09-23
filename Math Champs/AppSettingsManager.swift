@@ -72,7 +72,9 @@ class AppSettingsManager: ObservableObject {
         multiplicationMinNumber2 = 2
         multiplicationMaxNumber2 = 12
         generateNewOnIncorrect = false
+        automaticCorrect = false
         preserveProblems = true
+        perfectAnimationEnabled = true
         operationTypes = ["addition", "subtraction", "multiplication", "division"]
         timerDuration = 60 // Reset to 1 minute
         saveOperationTypes()
