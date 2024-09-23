@@ -1,10 +1,25 @@
 import SwiftUI
 
+struct TimerSummaryBannerView: View {
+    @ObservedObject var viewModel: PracticePageViewModel
+
+    var body: some View {
+        TimerSummaryBanner(
+            problemsSolved: viewModel.problemsSolvedDuringTimer,
+            totalTime: viewModel.settingsManager.timerDuration,
+            isExpanded: $viewModel.isSummaryExpanded,
+            onDismiss: viewModel.dismissSummaryBanner,
+            onToggleExpansion: viewModel.toggleSummaryExpansion
+        )
+    }
+}
+
 struct TimerSummaryBanner: View {
     let problemsSolved: Int
     let totalTime: Int
     @Binding var isExpanded: Bool
     var onDismiss: () -> Void
+    var onToggleExpansion: () -> Void
 
     var body: some View {
         VStack {
@@ -25,10 +40,10 @@ struct TimerSummaryBanner: View {
             .cornerRadius(10)
             .onTapGesture {
                 withAnimation {
-                    isExpanded.toggle()
+                    onToggleExpansion()
                 }
             }
-            
+
             if isExpanded {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Total time: \(totalTime) seconds")

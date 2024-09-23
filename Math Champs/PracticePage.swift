@@ -49,9 +49,16 @@ struct PracticePage: View {
                 }
                 .padding(.bottom, optimizedBottomPadding(for: geometry))
 
-                if viewModel.showSummaryBanner {
-                    TimerSummaryBannerView(viewModel: viewModel)
+                VStack {
+                    if viewModel.showSummaryBanner {
+                        TimerSummaryBannerView(viewModel: viewModel)
+                            .transition(.move(edge: .top).combined(with: .opacity))
+                            .zIndex(1)
+                            .padding(.top, topSafeAreaInset + 60) // Adjust this value as needed
+                    }
+                    Spacer()
                 }
+                .animation(.easeInOut(duration: 0.3), value: viewModel.showSummaryBanner)
             }
         }
         .edgesIgnoringSafeArea(.all)
@@ -130,20 +137,5 @@ struct ControlButtons: View {
         }
         .padding(.horizontal)
         .padding(.bottom, 5)
-    }
-}
-
-struct TimerSummaryBannerView: View {
-    @ObservedObject var viewModel: PracticePageViewModel
-
-    var body: some View {
-        TimerSummaryBanner(
-            problemsSolved: viewModel.problemsSolvedDuringTimer,
-            totalTime: viewModel.settingsManager.timerDuration,
-            isExpanded: $viewModel.isSummaryExpanded,
-            onDismiss: viewModel.dismissSummaryBanner
-        )
-        .transition(.move(edge: .top).combined(with: .opacity))
-        .zIndex(1)
     }
 }

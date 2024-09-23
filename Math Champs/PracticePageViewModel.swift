@@ -22,6 +22,8 @@ class PracticePageViewModel: ObservableObject {
     private var hasSubmittedIncorrectly: Bool = false
     private var isAnswerChecked = false
     private var lastCheckedAnswer = ""
+    private var bannerDismissTimer: Timer?
+    private let bannerDismissDelay: TimeInterval = 5.0
 
     let gameState: GameState
     let settingsManager: AppSettingsManager
@@ -155,6 +157,7 @@ class PracticePageViewModel: ObservableObject {
             showSummaryBanner = false
             isSummaryExpanded = false
         }
+        stopBannerDismissTimer()
     }
 
     private func resetProblemState() {
@@ -212,6 +215,7 @@ class PracticePageViewModel: ObservableObject {
         timer = nil
         remainingTime = settingsManager.timerDuration
         displayedTime = Double(settingsManager.timerDuration)
+        showTimerSummaryBanner()
     }
 
     private func notificationFeedback(_ type: UINotificationFeedbackGenerator.FeedbackType) {
@@ -222,6 +226,33 @@ class PracticePageViewModel: ObservableObject {
     private func impactFeedback(_ style: UIImpactFeedbackGenerator.FeedbackStyle) {
         let impact = UIImpactFeedbackGenerator(style: style)
         impact.impactOccurred()
+    }
+
+    func showTimerSummaryBanner() {
+        showSummaryBanner = true
+        isSummaryExpanded = false
+        startBannerDismissTimer()
+    }
+
+    func toggleSummaryExpansion() {
+        isSummaryExpanded.toggle()
+        if isSummaryExpanded {
+            stopBannerDismissTimer()
+        } else {
+            startBannerDismissTimer()
+        }
+    }
+
+    private func startBannerDismissTimer() {
+        stopBannerDismissTimer()
+        bannerDismissTimer = Timer.scheduledTimer(withTimeInterval: bannerDismissDelay, repeats: false) { [weak self] _ in
+            self?.dismissSummaryBanner()
+        }
+    }
+
+    private func stopBannerDismissTimer() {
+        bannerDismissTimer?.invalidate()
+        bannerDismissTimer = nil
     }
 }
 
