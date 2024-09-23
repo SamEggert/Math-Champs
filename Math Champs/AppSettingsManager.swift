@@ -80,3 +80,24 @@ class AppSettingsManager: ObservableObject {
         saveOperationTypes()
     }
 }
+
+struct Problem: Codable, Equatable {
+    let firstNumber: Int
+    let secondNumber: Int
+    let operation: String
+
+    var correctAnswer: Int {
+        switch operation {
+        case "+":
+            return firstNumber + secondNumber
+        case "-":
+            return firstNumber - secondNumber
+        case "×":
+            return firstNumber * secondNumber
+        case "÷":
+            return firstNumber / secondNumber
+        default:
+            return 0
+        }
+    }
+}

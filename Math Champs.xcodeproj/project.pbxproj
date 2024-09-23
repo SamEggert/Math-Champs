@@ -23,6 +23,11 @@
 		0405186D2C92065500414BDA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0405186A2C92065500414BDA /* SettingsView.swift */; };
 		0405186E2C92065500414BDA /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0405186B2C92065500414BDA /* StatsView.swift */; };
 		045DEA432CA0821100A6AB1F /* Shimmer in Frameworks */ = {isa = PBXBuildFile; productRef = 045DEA422CA0821100A6AB1F /* Shimmer */; };
+		047ED5162CA1FB8E00868506 /* ProgressBarNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047ED5152CA1FB8E00868506 /* ProgressBarNavigationView.swift */; };
+		047ED5172CA1FB8E00868506 /* NumberPadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047ED5132CA1FB8E00868506 /* NumberPadView.swift */; };
+		047ED5182CA1FB8E00868506 /* ProblemDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047ED5142CA1FB8E00868506 /* ProblemDisplayView.swift */; };
+		047ED5192CA1FB8E00868506 /* NumberPadHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047ED5122CA1FB8E00868506 /* NumberPadHeaderView.swift */; };
+		047ED51B2CA1FC3900868506 /* PracticePageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047ED51A2CA1FC3400868506 /* PracticePageViewModel.swift */; };
 		04F8180E2C961BFE00B8085E /* TimerSummaryBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F8180D2C961BFE00B8085E /* TimerSummaryBanner.swift */; };
 /* End PBXBuildFile section */
 
@@ -62,6 +67,11 @@
 		040518692C92065400414BDA /* PracticePage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PracticePage.swift; sourceTree = "<group>"; };
 		0405186A2C92065500414BDA /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		0405186B2C92065500414BDA /* StatsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
+		047ED5122CA1FB8E00868506 /* NumberPadHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberPadHeaderView.swift; sourceTree = "<group>"; };
+		047ED5132CA1FB8E00868506 /* NumberPadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberPadView.swift; sourceTree = "<group>"; };
+		047ED5142CA1FB8E00868506 /* ProblemDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProblemDisplayView.swift; sourceTree = "<group>"; };
+		047ED5152CA1FB8E00868506 /* ProgressBarNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarNavigationView.swift; sourceTree = "<group>"; };
+		047ED51A2CA1FC3400868506 /* PracticePageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticePageViewModel.swift; sourceTree = "<group>"; };
 		04F8180D2C961BFE00B8085E /* TimerSummaryBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerSummaryBanner.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -122,6 +132,11 @@
 				040518692C92065400414BDA /* PracticePage.swift */,
 				04F8180D2C961BFE00B8085E /* TimerSummaryBanner.swift */,
 				0405186A2C92065500414BDA /* SettingsView.swift */,
+				047ED5122CA1FB8E00868506 /* NumberPadHeaderView.swift */,
+				047ED5132CA1FB8E00868506 /* NumberPadView.swift */,
+				047ED5142CA1FB8E00868506 /* ProblemDisplayView.swift */,
+				047ED5152CA1FB8E00868506 /* ProgressBarNavigationView.swift */,
+				047ED51A2CA1FC3400868506 /* PracticePageViewModel.swift */,
 				0405186B2C92065500414BDA /* StatsView.swift */,
 				040518672C92061C00414BDA /* AnimatedButton.swift */,
 				040518522C8F425000414BDA /* AppSettingsManager.swift */,
@@ -294,7 +309,12 @@
 				040518532C8F425000414BDA /* AppSettingsManager.swift in Sources */,
 				0405186D2C92065500414BDA /* SettingsView.swift in Sources */,
 				040518602C8F42A500414BDA /* GameState.swift in Sources */,
+				047ED5162CA1FB8E00868506 /* ProgressBarNavigationView.swift in Sources */,
+				047ED5172CA1FB8E00868506 /* NumberPadView.swift in Sources */,
+				047ED5182CA1FB8E00868506 /* ProblemDisplayView.swift in Sources */,
+				047ED5192CA1FB8E00868506 /* NumberPadHeaderView.swift in Sources */,
 				040518652C9205DE00414BDA /* AppDelegate.swift in Sources */,
+				047ED51B2CA1FC3900868506 /* PracticePageViewModel.swift in Sources */,
 				0405186E2C92065500414BDA /* StatsView.swift in Sources */,
 				0405186C2C92065500414BDA /* PracticePage.swift in Sources */,
 				040518682C92061C00414BDA /* AnimatedButton.swift in Sources */,
@@ -472,12 +492,12 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = app.mathchamps.MathChamps;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -503,12 +523,12 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = app.mathchamps.MathChamps;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
