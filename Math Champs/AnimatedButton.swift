@@ -3,7 +3,7 @@ import SwiftUI
 struct AnimatedButton: View {
     let title: String
     let action: () -> Void
-    
+
     var width: CGFloat = 120
     var height: CGFloat = 60
     var cornerRadius: CGFloat = 8
@@ -13,10 +13,10 @@ struct AnimatedButton: View {
     var fontSize: CGFloat = 40
     var shadowHeight: CGFloat = 6
     var pressedDuration: Double = 0.07
-    
+
     @GestureState private var isPressed = false
     @State private var buttonPressed = false
-    
+
     var body: some View {
         ZStack {
             // Bottom rectangle (shadow)
@@ -24,13 +24,13 @@ struct AnimatedButton: View {
                 .fill(bottomColor)
                 .frame(width: width, height: height)
                 .offset(y: shadowHeight)
-            
+
             // Top rectangle
             RoundedRectangle(cornerRadius: cornerRadius)
                 .fill(topColor)
                 .frame(width: width, height: height)
                 .offset(y: isPressed ? shadowHeight : 0)
-            
+
             // Button text
             Text(title)
                 .font(.system(size: fontSize))
@@ -59,7 +59,7 @@ struct AnimatedButton: View {
         )
         .animation(.easeInOut(duration: pressedDuration), value: isPressed)
     }
-    
+
     private func hapticFeedback() {
         let impact = UIImpactFeedbackGenerator(style: .medium)
         impact.impactOccurred()

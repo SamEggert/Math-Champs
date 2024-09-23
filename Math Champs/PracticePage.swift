@@ -5,7 +5,7 @@ struct PracticePage: View {
     @ObservedObject var gameState: GameState
     @ObservedObject var settingsManager: AppSettingsManager
     @Binding var selectedTab: Int
-    
+
     @State private var firstNumber = 0
     @State private var secondNumber = 0
     @State private var operationSymbol = "+"
@@ -35,7 +35,7 @@ struct PracticePage: View {
         GeometryReader { geometry in
             ZStack {
                 Color(hex: "242329").edgesIgnoringSafeArea(.all)
-                
+
                 VStack(spacing: 0) {
                     // Progress Bar and Navigation Buttons
                     VStack(spacing: 0) {
@@ -48,8 +48,8 @@ struct PracticePage: View {
                         .padding(.horizontal)
                         .padding(.bottom, 10)
                         .animation(.linear(duration: 0.1), value: displayedTime) // Animate only the bar
-                                                
-                        
+
+
                         // Navigation and Level
                         HStack {
                             Button(action: { withAnimation { self.selectedTab = 0 } }) {
@@ -58,7 +58,7 @@ struct PracticePage: View {
                                     .font(.system(size: 20))
                             }
                             Spacer()
-                            
+
                             if isTimerActive {
                                 Text("\(problemsSolvedDuringTimer) | \(timeString(from: remainingTime))")
                                     .foregroundColor(.white)
@@ -68,7 +68,7 @@ struct PracticePage: View {
                                     .foregroundColor(.white)
                                     .font(.system(size: 18, weight: .bold))
                             }
-                            
+
                             Spacer()
                             Button(action: { withAnimation { self.selectedTab = 2 } }) {
                                 Image(systemName: "chart.bar")
@@ -81,15 +81,15 @@ struct PracticePage: View {
                     }
                     .modifier(BelowNotchViewModifier())
                     .animation(.linear(duration: 0.1), value: displayedTime)
-                    
+
                     Spacer()
-                    
+
                     // Problem display
                     VStack(alignment: .trailing, spacing: 10) {
                         Text("\(currentProblem?.firstNumber ?? 0)")
                             .font(.system(size: 60, weight: .bold))
                             .shimmering(
-                                active: isShimmering,
+                                active: settingsManager.perfectAnimationEnabled && isShimmering,
                                 animation: Animation.linear(duration: 0.3).repeatForever(autoreverses: true),
                                 gradient: Gradient(stops: [
                                     .init(color: .green, location: 0),
@@ -105,7 +105,7 @@ struct PracticePage: View {
                             Text("\(currentProblem?.secondNumber ?? 0)")
                                 .font(.system(size: 60, weight: .bold))
                                 .shimmering(
-                                    active: isShimmering,
+                                    active: settingsManager.perfectAnimationEnabled && isShimmering,
                                     animation: Animation.linear(duration: 0.3).repeatForever(autoreverses: true),
                                     gradient: Gradient(stops: [
                                         .init(color: .green, location: 0),
@@ -121,7 +121,7 @@ struct PracticePage: View {
                             Rectangle()
                                 .fill(Color.white)
                                 .frame(height: 4)
-                            
+
                             if showingColorFeedback {
                                 Rectangle()
                                     .fill(colorForAnswer())
@@ -129,10 +129,10 @@ struct PracticePage: View {
                             }
                         }
                         Text(showingIncorrectFeedback ? userAnswer : (userAnswer.isEmpty ? "?" : userAnswer))
-                            .font(.system(size: 60, weight: .bold))
+                            .font(.system(size: fontSize(for: userAnswer.count), weight: .bold))
                             .frame(height: 70)
                             .shimmering(
-                                active: isShimmering,
+                                active: settingsManager.perfectAnimationEnabled && isShimmering,
                                 animation: Animation.linear(duration: 0.3).repeatForever(autoreverses: true),
                                 gradient: Gradient(stops: [
                                     .init(color: .green, location: 0),
@@ -146,9 +146,9 @@ struct PracticePage: View {
                     .foregroundColor(showingColorFeedback ? colorForAnswer() : .white)
                     .frame(width: min(geometry.size.width * 0.8, 300))
                     .padding(.top, 20)
-                    
+
                     Spacer()
-                    
+
                     // Small row with timer button and new problem button
                     HStack {
                         Button(action: {
@@ -158,9 +158,9 @@ struct PracticePage: View {
                                 .foregroundColor(.white.opacity(0.6))
                                 .font(.system(size: 20))
                         }
-                        
+
                         Spacer()
-                        
+
                         Button(action: {
                             if isTimerActive {
                                 // Stop the timer
@@ -186,8 +186,8 @@ struct PracticePage: View {
                     }
                     .padding(.horizontal)
                     .padding(.bottom, 5)
-                    
-                    
+
+
                     // Number pad
                     VStack(spacing: 4) {
                         ForEach(1...3, id: \.self) { row in
@@ -250,7 +250,7 @@ struct PracticePage: View {
                     .padding(.horizontal, 8)
                 }
                 .padding(.bottom, optimizedBottomPadding(for: geometry))
-                
+
                 // Overlay the TimerSummaryBanner
                 if showSummaryBanner {
                     GeometryReader { geo in
@@ -269,7 +269,7 @@ struct PracticePage: View {
                             .frame(maxWidth: .infinity)
                             .padding(.top, 120)
                             .transition(.move(edge: .top).combined(with: .opacity))
-                            
+
                             Spacer()
                         }
                     }
@@ -289,7 +289,7 @@ struct PracticePage: View {
             }
             resetProblemState()
         }
-        
+
         .onChange(of: settingsManager.operationTypes) { _, _ in generateNewProblem() }
         .onChange(of: settingsManager.additionMinNumber1) { _, _ in generateNewProblem() }
         .onChange(of: settingsManager.additionMaxNumber1) { _, _ in generateNewProblem() }
@@ -300,32 +300,32 @@ struct PracticePage: View {
         .onChange(of: settingsManager.multiplicationMinNumber2) { _, _ in generateNewProblem() }
         .onChange(of: settingsManager.multiplicationMaxNumber2) { _, _ in generateNewProblem() }
     }
-    
+
     private func optimizedBottomPadding(for geometry: GeometryProxy) -> CGFloat {
         let screenHeight = UIScreen.main.bounds.height
         let safeAreaBottom = geometry.safeAreaInsets.bottom
-        
+
         // Approximate position where the iPhone's curve begins
         let curveBeginRatio: CGFloat = 0.87
-        
+
         let optimalPosition = screenHeight * curveBeginRatio
         let currentPosition = screenHeight - safeAreaBottom
-        
+
         let additionalPadding = currentPosition - optimalPosition
-        
+
         // Ensure we don't push the buttons too high
         return max(safeAreaBottom, min(additionalPadding, 40))
     }
-    
+
     func generateNewProblem() {
         guard !settingsManager.operationTypes.isEmpty else {
             settingsManager.operationTypes = ["addition"]
             return
         }
-        
+
         isShimmering = false
         let operation = settingsManager.operationTypes.randomElement()!
-        
+
         switch operation {
         case "addition":
             operationSymbol = "+"
@@ -340,6 +340,7 @@ struct PracticePage: View {
             firstNumber = n1 + n2
             secondNumber = n1
             currentProblem = Problem(firstNumber: firstNumber, secondNumber: secondNumber, operation: operationSymbol)
+
 
         case "multiplication":
             operationSymbol = "×"
@@ -361,14 +362,14 @@ struct PracticePage: View {
             secondNumber = Int.random(in: settingsManager.additionMinNumber2...settingsManager.additionMaxNumber2)
             currentProblem = Problem(firstNumber: firstNumber, secondNumber: secondNumber, operation: operationSymbol)
         }
-        
+
         if settingsManager.preserveProblems {
             settingsManager.saveLastProblem(currentProblem)
         }
-        
+
         resetProblemState()
     }
-    
+
     func resetProblemState() {
         userAnswer = ""
         isCorrect = nil
@@ -382,7 +383,7 @@ struct PracticePage: View {
         lastCheckedAnswer = ""
     }
 
-    
+
     private func colorForAnswer() -> Color {
         guard let isCorrect = isCorrect else {
             return .white  // Default color when isCorrect is nil
@@ -392,31 +393,31 @@ struct PracticePage: View {
         }
         return isCorrect ? .green : .red
     }
-    
-    
+
+
     func checkAnswer(autoSubmit: Bool) {
         guard let problem = currentProblem else { return }
-        
+
         if let answer = Int(userAnswer) {
             let correctAnswer = problem.correctAnswer
-           
+
             isCorrect = (answer == correctAnswer)
-           
+
             if isCorrect == true && userAnswer != lastCheckedAnswer {
                 gameState.totalProblems += 1
                 gameState.correctAnswers += 1
                 if isTimerActive {
                     problemsSolvedDuringTimer += 1
                 }
-               
+
                 // Check if it's a perfect answer
                 isPerfectAnswer = !hasCleared && !hasSubmittedIncorrectly
-               
+
                 notificationFeedback(isPerfectAnswer ? .success : .warning)
-               
+
                 // Start shimmer effect for perfect answers
-                isShimmering = isPerfectAnswer
-               
+                isShimmering = settingsManager.perfectAnimationEnabled && isPerfectAnswer
+
                 // Always generate a new problem on correct answer
                 showColorFeedback(generateNewProblem: true)
                 lastCheckedAnswer = userAnswer
@@ -425,7 +426,7 @@ struct PracticePage: View {
                 notificationFeedback(.error)
                 hasSubmittedIncorrectly = true
                 isShimmering = false // Ensure shimmer is off for incorrect answers
-               
+
                 if settingsManager.generateNewOnIncorrect {
                     showingIncorrectFeedback = true
                     showColorFeedback(generateNewProblem: true)
@@ -435,11 +436,11 @@ struct PracticePage: View {
                 }
                 lastCheckedAnswer = userAnswer
             }
-            
+
             isAnswerChecked = isCorrect == true
         }
     }
-    
+
     func showColorFeedback(generateNewProblem: Bool) {
         showingColorFeedback = true
         DispatchQueue.main.asyncAfter(deadline: .now() + colorFeedbackDuration) {
@@ -452,34 +453,36 @@ struct PracticePage: View {
             }
             self.isAnswerChecked = false
             self.lastCheckedAnswer = ""
-            
+
             // Stop shimmer effect after feedback duration
             self.isShimmering = false
         }
     }
-    
-    
+
+
     func appendNumber(_ number: Int) {
-        userAnswer += "\(number)"
-        if settingsManager.automaticCorrect {
-            self.checkAnswer(autoSubmit: true)
+        if userAnswer.count < 22 {
+            userAnswer += "\(number)"
+            if settingsManager.automaticCorrect {
+                self.checkAnswer(autoSubmit: true)
+            }
         }
     }
-    
+
     func impactFeedback(_ style: UIImpactFeedbackGenerator.FeedbackStyle) {
         let impact = UIImpactFeedbackGenerator(style: style)
         impact.impactOccurred()
     }
-    
+
     func notificationFeedback(_ type: UINotificationFeedbackGenerator.FeedbackType) {
         let notification = UINotificationFeedbackGenerator()
         notification.notificationOccurred(type)
     }
-    
+
     private var currentLevel: Int {
         level(for: gameState.correctAnswers)
     }
-    
+
     private var progressToNextLevel: Double {
         let correctAnswers = gameState.correctAnswers
         let currentLevel = self.currentLevel
@@ -489,11 +492,11 @@ struct PracticePage: View {
         let totalForNextLevel = pointsForNextLevel - pointsForCurrentLevel
         return Double(currentProgress) / Double(totalForNextLevel)
     }
-    
+
     private func pointsForLevel(_ level: Int) -> Int {
         return (level - 1) * (level - 1) * 5
     }
-    
+
     private func level(for points: Int) -> Int {
         var level = 1
         while points >= pointsForLevel(level + 1) {
@@ -501,19 +504,19 @@ struct PracticePage: View {
         }
         return level
     }
-    
+
     func timeString(from seconds: Int) -> String {
         let minutes = seconds / 60
         let remainingSeconds = seconds % 60
         return String(format: "%d:%02d", minutes, remainingSeconds)
     }
-    
+
     func startTimer() {
         timer?.invalidate() // Invalidate any existing timer
         displayedTime = Double(settingsManager.timerDuration)
         remainingTime = settingsManager.timerDuration
         problemsSolvedDuringTimer = 0 // Reset the counter
-        
+
         timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
             if self.remainingTime > 0 {
                 self.displayedTime -= 0.1
@@ -524,12 +527,12 @@ struct PracticePage: View {
                 self.isTimerActive = false
                 self.remainingTime = self.settingsManager.timerDuration
                 self.displayedTime = Double(self.settingsManager.timerDuration)
-                
+
                 // Show the summary banner
                 withAnimation {
                     self.showSummaryBanner = true
                 }
-                
+
                 // Hide the banner after 5 seconds if it's not expanded
                 DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                     if !self.isSummaryExpanded {
@@ -543,6 +546,19 @@ struct PracticePage: View {
     }
 }
 
+private func fontSize(for count: Int) -> CGFloat {
+    let defaultFontSize: CGFloat = 60
+    let minFontSize: CGFloat = 20
+
+    if count <= 7 {
+        return defaultFontSize
+    } else {
+        let fontSize = defaultFontSize - (CGFloat(count - 7) / CGFloat(8)) * (defaultFontSize - minFontSize)
+        return max(fontSize, minFontSize)
+    }
+}
+
+
 struct BelowNotchViewModifier: ViewModifier {
     func body(content: Content) -> some View {
         if #available(iOS 15.0, *) {
@@ -553,7 +569,7 @@ struct BelowNotchViewModifier: ViewModifier {
                 .padding(.top, topInset)
         }
     }
-    
+
     private var topInset: CGFloat {
         let scenes = UIApplication.shared.connectedScenes
         let windowScene = scenes.first as? UIWindowScene
@@ -565,7 +581,7 @@ struct BelowNotchViewModifier: ViewModifier {
 struct ProgressBar: View {
     var progress: Double
     var color: Color
-    
+
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
@@ -584,7 +600,7 @@ struct Problem: Codable {
     let firstNumber: Int
     let secondNumber: Int
     let operation: String
-    
+
     var correctAnswer: Int {
         switch operation {
         case "+":
