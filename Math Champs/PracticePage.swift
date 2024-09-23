@@ -1,4 +1,5 @@
 import SwiftUI
+import Shimmer
 
 struct PracticePage: View {
     @ObservedObject var gameState: GameState
@@ -28,6 +29,7 @@ struct PracticePage: View {
     @State private var hasSubmittedIncorrectly: Bool = false
     @State private var isAnswerChecked = false
     @State private var lastCheckedAnswer = ""
+    @State private var isShimmering = false
 
     var body: some View {
         GeometryReader { geometry in
@@ -86,11 +88,34 @@ struct PracticePage: View {
                     VStack(alignment: .trailing, spacing: 10) {
                         Text("\(currentProblem?.firstNumber ?? 0)")
                             .font(.system(size: 60, weight: .bold))
+                            .shimmering(
+                                active: isShimmering,
+                                animation: Animation.linear(duration: 0.3).repeatForever(autoreverses: true),
+                                gradient: Gradient(stops: [
+                                    .init(color: .green, location: 0),
+                                    .init(color: Color(hex: "D4AF37"), location: 0.4),
+                                    .init(color: Color(hex: "FFD700"), location: 0.5),
+                                    .init(color: Color(hex: "D4AF37"), location: 0.6),
+                                    .init(color: .yellow.opacity(0.6), location: 1)
+                                ])
+                            )
                         HStack(spacing: 20) {
                             Text(currentProblem?.operation ?? "+")
                                 .font(.system(size: 60, weight: .bold))
                             Text("\(currentProblem?.secondNumber ?? 0)")
                                 .font(.system(size: 60, weight: .bold))
+                                .shimmering(
+                                    active: isShimmering,
+                                    animation: Animation.linear(duration: 0.3).repeatForever(autoreverses: true),
+                                    gradient: Gradient(stops: [
+                                        .init(color: .green, location: 0),
+                                        .init(color: Color(hex: "D4AF37"), location: 0.4),
+                                        .init(color: Color(hex: "FFD700"), location: 0.5),
+                                        .init(color: Color(hex: "D4AF37"), location: 0.6),
+                                        .init(color: .yellow.opacity(0.6), location: 1)
+                                    ])
+                                )
+
                         }
                         ZStack(alignment: .trailing) {
                             Rectangle()
@@ -106,6 +131,17 @@ struct PracticePage: View {
                         Text(showingIncorrectFeedback ? userAnswer : (userAnswer.isEmpty ? "?" : userAnswer))
                             .font(.system(size: 60, weight: .bold))
                             .frame(height: 70)
+                            .shimmering(
+                                active: isShimmering,
+                                animation: Animation.linear(duration: 0.3).repeatForever(autoreverses: true),
+                                gradient: Gradient(stops: [
+                                    .init(color: .green, location: 0),
+                                    .init(color: Color(hex: "D4AF37"), location: 0.4),
+                                    .init(color: Color(hex: "FFD700"), location: 0.5),
+                                    .init(color: Color(hex: "D4AF37"), location: 0.6),
+                                    .init(color: .yellow.opacity(0.6), location: 1)
+                                ])
+                            )
                     }
                     .foregroundColor(showingColorFeedback ? colorForAnswer() : .white)
                     .frame(width: min(geometry.size.width * 0.8, 300))
@@ -287,6 +323,7 @@ struct PracticePage: View {
             return
         }
         
+        isShimmering = false
         let operation = settingsManager.operationTypes.randomElement()!
         
         switch operation {
@@ -351,7 +388,7 @@ struct PracticePage: View {
             return .white  // Default color when isCorrect is nil
         }
         if isCorrect && isPerfectAnswer {
-            return .yellow  // Gold color for perfect answers
+            return .green  // Green for perfect answers
         }
         return isCorrect ? .green : .red
     }
@@ -377,6 +414,9 @@ struct PracticePage: View {
                
                 notificationFeedback(isPerfectAnswer ? .success : .warning)
                
+                // Start shimmer effect for perfect answers
+                isShimmering = isPerfectAnswer
+               
                 // Always generate a new problem on correct answer
                 showColorFeedback(generateNewProblem: true)
                 lastCheckedAnswer = userAnswer
@@ -384,6 +424,7 @@ struct PracticePage: View {
                 gameState.totalProblems += 1
                 notificationFeedback(.error)
                 hasSubmittedIncorrectly = true
+                isShimmering = false // Ensure shimmer is off for incorrect answers
                
                 if settingsManager.generateNewOnIncorrect {
                     showingIncorrectFeedback = true
@@ -411,6 +452,9 @@ struct PracticePage: View {
             }
             self.isAnswerChecked = false
             self.lastCheckedAnswer = ""
+            
+            // Stop shimmer effect after feedback duration
+            self.isShimmering = false
         }
     }
     

@@ -22,6 +22,7 @@
 		0405186C2C92065500414BDA /* PracticePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040518692C92065400414BDA /* PracticePage.swift */; };
 		0405186D2C92065500414BDA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0405186A2C92065500414BDA /* SettingsView.swift */; };
 		0405186E2C92065500414BDA /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0405186B2C92065500414BDA /* StatsView.swift */; };
+		045DEA432CA0821100A6AB1F /* Shimmer in Frameworks */ = {isa = PBXBuildFile; productRef = 045DEA422CA0821100A6AB1F /* Shimmer */; };
 		04F8180E2C961BFE00B8085E /* TimerSummaryBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F8180D2C961BFE00B8085E /* TimerSummaryBanner.swift */; };
 /* End PBXBuildFile section */
 
@@ -69,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				045DEA432CA0821100A6AB1F /* Shimmer in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -242,6 +244,9 @@
 				Base,
 			);
 			mainGroup = 0405181C2C8F420000414BDA;
+			packageReferences = (
+				045DEA412CA0821100A6AB1F /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */,
+			);
 			productRefGroup = 040518262C8F420000414BDA /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -624,6 +629,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		045DEA412CA0821100A6AB1F /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/markiv/SwiftUI-Shimmer";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		045DEA422CA0821100A6AB1F /* Shimmer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 045DEA412CA0821100A6AB1F /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */;
+			productName = Shimmer;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0405181D2C8F420000414BDA /* Project object */;
 }
