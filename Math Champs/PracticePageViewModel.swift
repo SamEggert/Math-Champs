@@ -269,7 +269,11 @@ extension PracticePageViewModel {
     }
 
     private var currentLevel: Int {
-        level(for: gameState.correctAnswers)
+        var level = 1
+        while gameState.totalProblems >= pointsForLevel(level + 1) {
+            level += 1
+        }
+        return level
     }
 
     private func pointsForLevel(_ level: Int) -> Int {

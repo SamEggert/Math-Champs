@@ -2,10 +2,10 @@ import SwiftUI
 
 struct ProgressBarNavigationView: View {
     @ObservedObject var settingsManager: AppSettingsManager
+    @ObservedObject var gameState: GameState
     @Binding var selectedTab: Int
     @Binding var isTimerActive: Bool
     @Binding var displayedTime: Double
-    @Binding var progressToNextLevel: Double
     @Binding var problemsSolvedDuringTimer: Int
     @Binding var remainingTime: Int
 
@@ -59,8 +59,24 @@ struct ProgressBarNavigationView: View {
     }
 
     private var currentLevel: Int {
-        // You may need to adjust this calculation based on your game logic
-        Int(progressToNextLevel * 10) + 1
+        var level = 1
+        while gameState.correctAnswers >= pointsForLevel(level + 1) {
+            level += 1
+        }
+        return level
+    }
+
+    private func pointsForLevel(_ level: Int) -> Int {
+        return (level - 1) * (level - 1) * 5
+    }
+
+    private var progressToNextLevel: Double {
+        let correctAnswers = gameState.correctAnswers
+        let pointsForCurrentLevel = pointsForLevel(currentLevel)
+        let pointsForNextLevel = pointsForLevel(currentLevel + 1)
+        let currentProgress = correctAnswers - pointsForCurrentLevel
+        let totalForNextLevel = pointsForNextLevel - pointsForCurrentLevel
+        return Double(currentProgress) / Double(totalForNextLevel)
     }
 }
 

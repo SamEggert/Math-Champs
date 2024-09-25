@@ -23,10 +23,10 @@ struct PracticePage: View {
                 VStack(spacing: 0) {
                     ProgressBarNavigationView(
                         settingsManager: settingsManager,
+                        gameState: gameState,
                         selectedTab: $selectedTab,
                         isTimerActive: $viewModel.isTimerActive,
                         displayedTime: $viewModel.displayedTime,
-                        progressToNextLevel: .constant(viewModel.progressToNextLevel),
                         problemsSolvedDuringTimer: $viewModel.problemsSolvedDuringTimer,
                         remainingTime: $viewModel.remainingTime
                     )
