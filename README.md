@@ -15,7 +15,7 @@ Math Champs transforms boring arithmetic into an exciting game that sharpens you
 <p align="center">
   <img src="demo_assets/demo1.gif" width="250" alt="Math Champs Demo 1">
   <img src="demo_assets/demo2.gif" width="250" alt="Math Champs Demo 2">
-  <img src="demo_assets/demo3.gif" width="250" alt="Math Champs Demo 3">
+  <img src="demo_assets/demo4.gif" width="250" alt="Math Champs Demo 3">
 </p>
 
 ## Getting Started
