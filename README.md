@@ -1,33 +1,14 @@
 # Math Champs iOS App
 
-A SwiftUI-based educational app for practicing mental math calculations through interactive exercises and timed challenges.
+<p align="center">
+  <img src="Math Champs/Assets.xcassets/AppIcon.appiconset/Math_Logo (5).png" width="200" alt="Math Champs Logo">
+</p>
 
-## Project Overview
+A thrilling educational app that challenges your mental math skills through fast-paced exercises and adrenaline-pumping timed challenges!
 
-The main application code is located in the `/Math Champs/Math Champs/` directory. Here are the key files:
+## Supercharge Your Math Skills!
 
-### Core Features
-- `PracticePage.swift` - Main practice interface where users solve math problems
-- `PracticePageViewModel.swift` - Business logic for the practice interface
-- `AppSettingsManager.swift` - Settings and configuration management
-
-### UI Components
-- `ProblemDisplayView.swift` - Displays the current math problem
-- `NumberPadView.swift` - Custom numeric keypad for input
-- `AnimatedButton.swift` - Reusable animated button component
-- `TimerSummaryBanner.swift` - Shows results after timed sessions
-
-### Views
-- `ContentView.swift` - Root view and navigation setup
-- `SettingsView.swift` - User preferences and difficulty settings
-- `StatsView.swift` - Progress tracking and statistics
-
-## Technology Stack
-- SwiftUI
-- Combine
-- SwiftUI Shimmer for animations
-- Native iOS haptics
-- UserDefaults for persistence
+Math Champs transforms boring arithmetic into an exciting game that sharpens your mind and makes calculations fun. Race against the clock, beat your high scores, and watch your mental math abilities soar to new heights!
 
 ## Getting Started
 
@@ -35,6 +16,10 @@ The main application code is located in the `/Math Champs/Math Champs/` director
 2. Open `Math Champs.xcodeproj` in Xcode
 3. Build and run the project (requires Xcode 14+ and iOS 16.6+)
 
+## A Fond Farewell
+
+Math Champs went offline at the end of January 2025. Thank you to all our users who made this journey amazing!
+
 ## Contact
 
-If you have any questions about the implementation or architecture decisions, please feel free to reach out.
+If you have any questions about the implementation or want to discuss how this project helped you, please reach out.
